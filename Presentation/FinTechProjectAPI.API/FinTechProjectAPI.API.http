@@ -1,0 +1,6 @@
+@FinTechProjectAPI.API_HostAddress = http://localhost:5028
+
+GET {{FinTechProjectAPI.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
