@@ -33,6 +33,10 @@ namespace FinTechProjectAPI.Persistence.Extension
             .AddDefaultTokenProviders();
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+            services.AddScoped<IExternalAuthenticationService, AuthenticationService>();
+            services.AddScoped<IInternalAuthenticationService, AuthenticationService>();
         }
     }
 }
