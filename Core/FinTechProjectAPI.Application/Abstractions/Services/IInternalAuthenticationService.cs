@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FinTechProjectAPI.Application.Security.JWT;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace FinTechProjectAPI.Application.Abstractions.Services
 {
     public interface IInternalAuthenticationService
     {
-        Task<bool> loginAsync(string userNameOrEmail, string password);
+        Task<Token> loginAsync(string userNameOrEmail, string password, int accessTokenLifeTime);
     }
 }

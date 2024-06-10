@@ -1,5 +1,6 @@
 ﻿using FinTechProjectAPI.Application.Abstractions.Services;
 using FinTechProjectAPI.Application.Exceptions;
+using FinTechProjectAPI.Application.Security.JWT;
 using FinTechProjectAPI.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -14,15 +15,16 @@ namespace FinTechProjectAPI.Persistence.Services
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly ITokenHandler _tokenHandler;
 
-
-        public AuthenticationService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public AuthenticationService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenHandler tokenHandler)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _tokenHandler = tokenHandler;
         }
 
-        public async Task<bool> loginAsync(string userNameOrEmail, string password)
+        public async Task<Token> loginAsync(string userNameOrEmail, string password, int accessTokenLifeTime)
         {
             AppUser? user = await _userManager.FindByNameAsync(userNameOrEmail);
             if (user == null)
@@ -31,7 +33,7 @@ namespace FinTechProjectAPI.Persistence.Services
                 throw new UserNotFoundException();
             SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
             if (result.Succeeded)
-                return true;
+               return _tokenHandler.CreateAccessToken(accessTokenLifeTime, user);
             else
                 throw new AuthenticationErrorException("Giriş yapılan şifre hatalı");
 
