@@ -16,7 +16,7 @@ namespace FinTechProjectAPI.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public async Task<IActionResult> LoginAsync([FromBody]LoginUserCommandRequest loginUserCommandRequest)
         {
             LoginUserCommandResponse reponse= await _mediator.Send(loginUserCommandRequest);
