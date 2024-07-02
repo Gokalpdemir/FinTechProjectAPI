@@ -27,6 +27,30 @@ namespace FinTechProjectAPI.Persistence.Context
 
         public IConfiguration Configuration { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<IncomeTransaction> IncomeTransactions { get; set; }
+        public DbSet<ExpenseTransaction> ExpenseTransactions { get; set; }
+        public DbSet<IncomeCategory> IncomeCategories { get; set; }
+        public DbSet<ExpenseCategory> expenseCategories { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<Transaction>().HasKey(t => t.Id);
+
+            builder.Entity<Transaction>()
+                .HasOne(t=>t.IncomeTransaction)
+                .WithOne(ıt=>ıt.Transaction)
+                .HasForeignKey<IncomeTransaction>(ıt=>ıt.TransactionId);
+
+            builder.Entity<Transaction>()
+               .HasOne(t => t.ExpenseTransaction)
+               .WithOne(et => et.Transaction)
+               .HasForeignKey<ExpenseTransaction>(et => et.TransactionId);
+
+
+
+            base.OnModelCreating(builder);
+        }
 
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {

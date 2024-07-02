@@ -11,7 +11,7 @@ namespace FinTechProjectAPI.Domain.Entities.Identity
     {
         public string NameSurname { get; set; }
        
-
+        public ICollection<Transaction> Transactions { get; set; }
     }
 }
 

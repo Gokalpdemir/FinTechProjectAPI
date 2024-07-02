@@ -17,7 +17,7 @@ namespace FinTechProjectAPI.API.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserCommandRequest createUserCommandRequest)
         {
             CreateUserCommandResponse response = await _mediator.Send(createUserCommandRequest);
