@@ -13,7 +13,7 @@ namespace FinTechProjectAPI.Domain.Entities
         public string AppUserId { get; set; }
         public string Description { get; set; }
         public float Amount { get; set; }
-
+        public DateTime TransactionDate { get; set; }
         public AppUser AppUser { get; set; }
         public IncomeTransaction IncomeTransaction { get; set; }
         public ExpenseTransaction ExpenseTransaction { get; set; }
