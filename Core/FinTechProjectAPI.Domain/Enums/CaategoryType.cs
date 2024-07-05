@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FinTechProjectAPI.Domain.Enums
 {
-    public enum CaategoryType
+    public enum CategoryType
     {
         Expense, Income
     }

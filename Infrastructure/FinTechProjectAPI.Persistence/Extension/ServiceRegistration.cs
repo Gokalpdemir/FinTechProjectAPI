@@ -1,6 +1,8 @@
 ﻿using FinTechProjectAPI.Application.Abstractions.Services;
+using FinTechProjectAPI.Application.Repositories.Categories;
 using FinTechProjectAPI.Domain.Entities.Identity;
 using FinTechProjectAPI.Persistence.Context;
+using FinTechProjectAPI.Persistence.Repositories.Categories;
 using FinTechProjectAPI.Persistence.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +39,11 @@ namespace FinTechProjectAPI.Persistence.Extension
 
             services.AddScoped<IExternalAuthenticationService, AuthenticationService>();
             services.AddScoped<IInternalAuthenticationService, AuthenticationService>();
+
+            services.AddScoped<ICategoryReadRepository,CategoryReadRepository>();
+            services.AddScoped<ICategoryWriteRepository, CategoryWriteRepository>();
+
+            services.AddScoped<ICategoryService, CategoryService>();
         }
     }
 }

@@ -59,6 +59,7 @@ namespace FinTechProjectAPI.Persistence.Context
             {
                 if(data.State==EntityState.Added)
                     data.Entity.CreatedDate= DateTime.Now;
+
                 if(data.State==EntityState.Modified)
                     data.Entity.UpdatedDate= DateTime.Now;
 
