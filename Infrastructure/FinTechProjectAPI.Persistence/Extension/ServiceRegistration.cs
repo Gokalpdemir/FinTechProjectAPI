@@ -1,8 +1,14 @@
 ﻿using FinTechProjectAPI.Application.Abstractions.Services;
+using FinTechProjectAPI.Application.Abstractions.Services.Transactions;
 using FinTechProjectAPI.Application.Repositories.Categories;
+using FinTechProjectAPI.Application.Repositories.ExpenseTransactions;
+using FinTechProjectAPI.Application.Repositories.IncomeTransactions;
+using FinTechProjectAPI.Application.Repositories.Transactions;
 using FinTechProjectAPI.Domain.Entities.Identity;
 using FinTechProjectAPI.Persistence.Context;
 using FinTechProjectAPI.Persistence.Repositories.Categories;
+using FinTechProjectAPI.Persistence.Repositories.ExpenseTransactions;
+using FinTechProjectAPI.Persistence.Repositories.Transactions;
 using FinTechProjectAPI.Persistence.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +25,7 @@ namespace FinTechProjectAPI.Persistence.Extension
 {
     public static class ServiceRegistration
     {
-        public static void AddPersistenceServices(this IServiceCollection services,IConfiguration configuration)
+        public static void AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<FinTechProjectAPIDbContext>(option => option.UseSqlServer(configuration.GetConnectionString("MSSQL")));
             services.AddIdentity<AppUser, AppRole>(opt =>
@@ -40,10 +46,20 @@ namespace FinTechProjectAPI.Persistence.Extension
             services.AddScoped<IExternalAuthenticationService, AuthenticationService>();
             services.AddScoped<IInternalAuthenticationService, AuthenticationService>();
 
-            services.AddScoped<ICategoryReadRepository,CategoryReadRepository>();
+            services.AddScoped<ICategoryReadRepository, CategoryReadRepository>();
             services.AddScoped<ICategoryWriteRepository, CategoryWriteRepository>();
 
+            services.AddScoped<ITransactionReadRepository, TransactionReadRepository>();
+            services.AddScoped<ITransactionWriteRepository, TransactionWriteRepository>();
+
+            services.AddScoped<IIncomeTransactionReadRepository, IncomeTransactionReadRepository>();
+            services.AddScoped<IIncomeTransactionWriteRepository, IncomeTransactionWriteRepository>();
+
+            services.AddScoped<IExpenseTransactionReadRepository, ExpenseTransactionReadRepository>();
+            services.AddScoped<IExpenseTransactionWriteRepository, ExpenseTransactionWriteRepository>();
+
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ITransactionService , TransactionService>();
         }
     }
 }

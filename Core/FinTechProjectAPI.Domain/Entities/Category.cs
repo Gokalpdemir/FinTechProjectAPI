@@ -6,13 +6,12 @@ public class Category:BaseEntity
 {
     public string Name { get; set; }
     public CategoryType Type { get; set; }
-    public ICollection<ExpenseTransaction> ExpenseTransactions { get; set; }
-    public ICollection<IncomeTransaction> IncomeTransactions { get; set; }
+    public ICollection<Transaction> Transactions { get; set; }
+    
 
     public Category()
     {
-        ExpenseTransactions=new HashSet <ExpenseTransaction>();
-        IncomeTransactions = new HashSet <IncomeTransaction>();
+       Transactions= new HashSet<Transaction>();
 
     }
 

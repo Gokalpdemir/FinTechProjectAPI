@@ -52,31 +52,18 @@ namespace FinTechProjectAPI.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "expenseCategories",
+                name: "Categories",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_expenseCategories", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "IncomeCategories",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_IncomeCategories", x => x.Id);
+                    table.PrimaryKey("PK_Categories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -191,10 +178,12 @@ namespace FinTechProjectAPI.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Amount = table.Column<float>(type: "real", nullable: false),
+                    TransactionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -205,6 +194,12 @@ namespace FinTechProjectAPI.Persistence.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Transactions_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -213,9 +208,8 @@ namespace FinTechProjectAPI.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ExpenseCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -226,12 +220,6 @@ namespace FinTechProjectAPI.Persistence.Migrations
                         principalTable: "Transactions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ExpenseTransactions_expenseCategories_ExpenseCategoryId",
-                        column: x => x.ExpenseCategoryId,
-                        principalTable: "expenseCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -240,19 +228,12 @@ namespace FinTechProjectAPI.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IncomeCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_IncomeTransactions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_IncomeTransactions_IncomeCategories_IncomeCategoryId",
-                        column: x => x.IncomeCategoryId,
-                        principalTable: "IncomeCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_IncomeTransactions_Transactions_TransactionId",
                         column: x => x.TransactionId,
@@ -301,20 +282,10 @@ namespace FinTechProjectAPI.Persistence.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExpenseTransactions_ExpenseCategoryId",
-                table: "ExpenseTransactions",
-                column: "ExpenseCategoryId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ExpenseTransactions_TransactionId",
                 table: "ExpenseTransactions",
                 column: "TransactionId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_IncomeTransactions_IncomeCategoryId",
-                table: "IncomeTransactions",
-                column: "IncomeCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IncomeTransactions_TransactionId",
@@ -326,6 +297,11 @@ namespace FinTechProjectAPI.Persistence.Migrations
                 name: "IX_Transactions_AppUserId",
                 table: "Transactions",
                 column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_CategoryId",
+                table: "Transactions",
+                column: "CategoryId");
         }
 
         /// <inheritdoc />
@@ -356,16 +332,13 @@ namespace FinTechProjectAPI.Persistence.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "expenseCategories");
-
-            migrationBuilder.DropTable(
-                name: "IncomeCategories");
-
-            migrationBuilder.DropTable(
                 name: "Transactions");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
         }
     }
 }

@@ -52,9 +52,6 @@ namespace FinTechProjectAPI.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -65,8 +62,6 @@ namespace FinTechProjectAPI.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
 
                     b.HasIndex("TransactionId")
                         .IsUnique();
@@ -176,9 +171,6 @@ namespace FinTechProjectAPI.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -189,8 +181,6 @@ namespace FinTechProjectAPI.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
 
                     b.HasIndex("TransactionId")
                         .IsUnique();
@@ -211,6 +201,9 @@ namespace FinTechProjectAPI.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -227,6 +220,8 @@ namespace FinTechProjectAPI.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Transactions");
                 });
@@ -339,38 +334,22 @@ namespace FinTechProjectAPI.Persistence.Migrations
 
             modelBuilder.Entity("FinTechProjectAPI.Domain.Entities.ExpenseTransaction", b =>
                 {
-                    b.HasOne("Category", "Category")
-                        .WithMany("ExpenseTransactions")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("FinTechProjectAPI.Domain.Entities.Transaction", "Transaction")
                         .WithOne("ExpenseTransaction")
                         .HasForeignKey("FinTechProjectAPI.Domain.Entities.ExpenseTransaction", "TransactionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Category");
-
                     b.Navigation("Transaction");
                 });
 
             modelBuilder.Entity("FinTechProjectAPI.Domain.Entities.IncomeTransaction", b =>
                 {
-                    b.HasOne("Category", "Category")
-                        .WithMany("IncomeTransactions")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("FinTechProjectAPI.Domain.Entities.Transaction", "Transaction")
                         .WithOne("IncomeTransaction")
                         .HasForeignKey("FinTechProjectAPI.Domain.Entities.IncomeTransaction", "TransactionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Category");
 
                     b.Navigation("Transaction");
                 });
@@ -383,7 +362,15 @@ namespace FinTechProjectAPI.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Category", "Category")
+                        .WithMany("Transactions")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("AppUser");
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -439,9 +426,7 @@ namespace FinTechProjectAPI.Persistence.Migrations
 
             modelBuilder.Entity("Category", b =>
                 {
-                    b.Navigation("ExpenseTransactions");
-
-                    b.Navigation("IncomeTransactions");
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("FinTechProjectAPI.Domain.Entities.Identity.AppUser", b =>
