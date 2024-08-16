@@ -4,7 +4,7 @@ using MediatR;
 
 namespace FinTechProjectAPI.Application.Features.Categories.Queries.GetAll;
 
-public class GetAllCategoryQueryHandler : IRequestHandler<GetAllCategoryQueryRequest, List<GetAllCategoryQueryResponse>>
+public class GetAllCategoryQueryHandler : IRequestHandler<GetAllCategoryQueryRequest, GetAllCategoryQueryResponse>
 {
     private readonly ICategoryService _categoryService;
 
@@ -13,16 +13,21 @@ public class GetAllCategoryQueryHandler : IRequestHandler<GetAllCategoryQueryReq
         _categoryService = categoryService;
     }
 
-    public async Task<List<GetAllCategoryQueryResponse>> Handle(GetAllCategoryQueryRequest request, CancellationToken cancellationToken)
+    public async Task<GetAllCategoryQueryResponse> Handle(GetAllCategoryQueryRequest request, CancellationToken cancellationToken)
     {
-       List<ListCategoryDto> response= await _categoryService.GetAllAsync();
-        
-       return  response.Select(response => new GetAllCategoryQueryResponse
+       List<object> response= await _categoryService.GetAllAsync();
+
+        return new GetAllCategoryQueryResponse()
         {
-            Id= response.Id,
-            Name= response.Name,
-            Type= response.Type,
-        }).ToList();
+            allCategories = response
+        };
+        
+       //return  response.Select(response => new GetAllCategoryQueryResponse
+       // {
+       //     Id= response.Id,
+       //     Name= response.Name,
+       //     Type= response.Type,
+       // }).ToList();
 
      
     }

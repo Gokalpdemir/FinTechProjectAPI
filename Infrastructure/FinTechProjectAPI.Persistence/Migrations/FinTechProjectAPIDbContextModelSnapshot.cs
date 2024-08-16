@@ -28,6 +28,10 @@ namespace FinTechProjectAPI.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -43,7 +47,33 @@ namespace FinTechProjectAPI.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AppUserId");
+
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("FinTechProjectAPI.Domain.Entities.DefaultCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DefaultCategories");
                 });
 
             modelBuilder.Entity("FinTechProjectAPI.Domain.Entities.ExpenseTransaction", b =>
@@ -194,18 +224,21 @@ namespace FinTechProjectAPI.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<float>("Amount")
-                        .HasColumnType("real");
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
 
                     b.Property<string>("AppUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("CategoryId")
+                    b.Property<Guid?>("CategoryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DefaultCategoryId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -222,6 +255,8 @@ namespace FinTechProjectAPI.Persistence.Migrations
                     b.HasIndex("AppUserId");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("DefaultCategoryId");
 
                     b.ToTable("Transactions");
                 });
@@ -332,6 +367,17 @@ namespace FinTechProjectAPI.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Category", b =>
+                {
+                    b.HasOne("FinTechProjectAPI.Domain.Entities.Identity.AppUser", "AppUser")
+                        .WithMany("Categories")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
             modelBuilder.Entity("FinTechProjectAPI.Domain.Entities.ExpenseTransaction", b =>
                 {
                     b.HasOne("FinTechProjectAPI.Domain.Entities.Transaction", "Transaction")
@@ -364,13 +410,17 @@ namespace FinTechProjectAPI.Persistence.Migrations
 
                     b.HasOne("Category", "Category")
                         .WithMany("Transactions")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CategoryId");
+
+                    b.HasOne("FinTechProjectAPI.Domain.Entities.DefaultCategory", "DefaultCategory")
+                        .WithMany("Transactions")
+                        .HasForeignKey("DefaultCategoryId");
 
                     b.Navigation("AppUser");
 
                     b.Navigation("Category");
+
+                    b.Navigation("DefaultCategory");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -429,8 +479,15 @@ namespace FinTechProjectAPI.Persistence.Migrations
                     b.Navigation("Transactions");
                 });
 
+            modelBuilder.Entity("FinTechProjectAPI.Domain.Entities.DefaultCategory", b =>
+                {
+                    b.Navigation("Transactions");
+                });
+
             modelBuilder.Entity("FinTechProjectAPI.Domain.Entities.Identity.AppUser", b =>
                 {
+                    b.Navigation("Categories");
+
                     b.Navigation("Transactions");
                 });
 

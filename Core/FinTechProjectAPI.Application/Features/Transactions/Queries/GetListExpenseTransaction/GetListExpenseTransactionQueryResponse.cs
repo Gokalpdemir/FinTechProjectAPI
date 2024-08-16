@@ -2,7 +2,7 @@
 
 public class GetListExpenseTransactionQueryResponse
 {
-    public float Amount { get; set; }
+    public Double Amount { get; set; }
     public string Description { get; set; }
     public string Category { get; set; }
     public string TransactionType { get; set; }

@@ -23,6 +23,7 @@ public class GetAllTransactionQueryRequestHandler : IRequestHandler<GetAllTransa
             Category = t.Category,
             TransactionType = t.TransactionType,
             TransactionDate = t.TransactionDate,
+            TransactionId = t.TransactionId,
         }).ToList();
         
     }

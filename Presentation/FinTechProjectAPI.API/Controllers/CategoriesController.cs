@@ -2,6 +2,7 @@
 using FinTechProjectAPI.Application.Features.Categories.Queries.GetAll;
 using FinTechProjectAPI.Application.Features.Categories.Queries.GetByType;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace FinTechProjectAPI.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes ="adm")]
     public class CategoriesController : BaseController
     {
 
@@ -23,7 +25,7 @@ namespace FinTechProjectAPI.API.Controllers
         public async Task<IActionResult> GetAll()
         {
             GetAllCategoryQueryRequest request = new GetAllCategoryQueryRequest();
-            List<GetAllCategoryQueryResponse> responses = await Mediator.Send(request);
+            GetAllCategoryQueryResponse responses = await Mediator.Send(request);
             return Ok(responses);
         }
 

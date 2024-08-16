@@ -64,6 +64,25 @@ namespace FinTechProjectAPI.API
                 .CreateLogger();
             builder.Host.UseSerilog(log);
 
+            //Logger log = new LoggerConfiguration()
+            // .WriteTo.Console()
+            // .WriteTo.File("Logs/log.txt")
+            // .WriteTo.MSSqlServer(
+            //     connectionString: builder.Configuration.GetConnectionString("MSSQL"),
+            //     sinkOptions: new MSSqlServerSinkOptions
+            //     {
+            //         AutoCreateSqlTable = true,
+            //         TableName = "Logs"
+            //     },
+            //     columnOptions: columnOpt
+            // )
+            // .Enrich.FromLogContext()
+            // .Enrich.With<CustomUserNameColumn>()
+            // .MinimumLevel.Information()
+            // .CreateLogger();
+
+            //builder.Host.UseSerilog(log);
+
             //JWT
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer("adm", opt =>
             {
@@ -85,11 +104,15 @@ namespace FinTechProjectAPI.API
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+            
+            
                 app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+            app.UseSwaggerUI(opt =>
+            {
+                opt.SwaggerEndpoint("/swagger/v1/swagger.json", "Butche Backend");
+                opt.RoutePrefix=string.Empty;
+            } );
+            
 
 
 
@@ -97,7 +120,7 @@ namespace FinTechProjectAPI.API
             app.UseAuthentication();
             app.UseAuthorization();
 
-            
+
             app.Use(async (context, next) =>
             {
                 var username = context.User?.Identity?.IsAuthenticated != null || true ? context.User.Identity.Name : null;

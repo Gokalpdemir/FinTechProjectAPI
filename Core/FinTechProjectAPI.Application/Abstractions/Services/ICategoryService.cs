@@ -10,6 +10,6 @@ namespace FinTechProjectAPI.Application.Abstractions.Services;
 public interface ICategoryService
 {
     Task<bool> CreateAsync(CreateCategoryDto createCategoryDto);
-    Task<List<ListCategoryDto>> GetAllAsync();
+    Task<List<object>> GetAllAsync();
     Task<List<GetByTypeCategoryDto>> GetByTypeAsync(int type);
 }

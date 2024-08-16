@@ -9,7 +9,7 @@ namespace FinTechProjectAPI.Application.DTOs.Transaction;
 public class GetCurrentBalanceDto
 {
     public string UserName { get; set; }
-    public float Income { get; set; }
-    public float Expense { get; set; }
-    public float  CurrentBalance { get; set; }
+    public Double Income { get; set; }
+    public Double Expense { get; set; }
+    public Double  CurrentBalance { get; set; }
 }

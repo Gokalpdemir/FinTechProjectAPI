@@ -1,12 +1,14 @@
 ﻿using FinTechProjectAPI.Application.Abstractions.Services;
 using FinTechProjectAPI.Application.Abstractions.Services.Transactions;
 using FinTechProjectAPI.Application.Repositories.Categories;
+using FinTechProjectAPI.Application.Repositories.DefaultCategories;
 using FinTechProjectAPI.Application.Repositories.ExpenseTransactions;
 using FinTechProjectAPI.Application.Repositories.IncomeTransactions;
 using FinTechProjectAPI.Application.Repositories.Transactions;
 using FinTechProjectAPI.Domain.Entities.Identity;
 using FinTechProjectAPI.Persistence.Context;
 using FinTechProjectAPI.Persistence.Repositories.Categories;
+using FinTechProjectAPI.Persistence.Repositories.DefaultCategories;
 using FinTechProjectAPI.Persistence.Repositories.ExpenseTransactions;
 using FinTechProjectAPI.Persistence.Repositories.Transactions;
 using FinTechProjectAPI.Persistence.Services;
@@ -60,6 +62,9 @@ namespace FinTechProjectAPI.Persistence.Extension
 
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ITransactionService , TransactionService>();
+
+            services.AddScoped<IDefaultCategoryReadRepository, DefaultCategoryReadRepository>();
+            services.AddScoped<IDefaultCategoryWriteRepository, DefaultCategoryWriteRepository>();
         }
     }
 }

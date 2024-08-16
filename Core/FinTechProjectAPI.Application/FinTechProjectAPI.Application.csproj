@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Folder Include="Features\AppUsers\Queries\" />
+    <Folder Include="Features\DefaultCategories\Queries\" />
   </ItemGroup>
 
 </Project>

@@ -30,6 +30,7 @@ namespace FinTechProjectAPI.Persistence.Context
         public DbSet<IncomeTransaction> IncomeTransactions { get; set; }
         public DbSet<ExpenseTransaction> ExpenseTransactions { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<DefaultCategory> DefaultCategories { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

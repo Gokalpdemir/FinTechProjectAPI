@@ -1,5 +1,6 @@
 ﻿using FinTechProjectAPI.Application.Features.Transactions.Commands.CreateExpenseTransaction;
 using FinTechProjectAPI.Application.Features.Transactions.Commands.CreateIncomeTransaction;
+using FinTechProjectAPI.Application.Features.Transactions.Commands.DeleteTransaction;
 using FinTechProjectAPI.Application.Features.Transactions.Queries.GetAll;
 using FinTechProjectAPI.Application.Features.Transactions.Queries.GetCurrentBalance;
 using FinTechProjectAPI.Application.Features.Transactions.Queries.GetListExpenseTransection;
@@ -62,6 +63,13 @@ namespace FinTechProjectAPI.API.Controllers
         public async Task<IActionResult> CreateExpenseTransaction([FromBody] CreateExpenseTransactionCommandRequest createExpenseTransactionCommandRequest)
         {
             CreateExpenseTransactionCommandResponse response = await Mediator.Send(createExpenseTransactionCommandRequest);
+            return Ok(response);
+        }
+
+        [HttpDelete("[action]/{transactionId}")]
+        public async Task<IActionResult> DeleteTransaction([FromRoute] DeleteTransactionCommendRequest deleteTransactionCommendRequest)
+        {
+            DeleteTransactionCommendResponse response = await Mediator.Send(deleteTransactionCommendRequest);
             return Ok(response);
         }
 

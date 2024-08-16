@@ -8,6 +8,6 @@ using System.Threading.Tasks;
 
 namespace FinTechProjectAPI.Application.Features.Categories.Queries.GetAll;
 
-public class GetAllCategoryQueryRequest:IRequest<List<GetAllCategoryQueryResponse>>
+public class GetAllCategoryQueryRequest:IRequest<GetAllCategoryQueryResponse>
 {
 }

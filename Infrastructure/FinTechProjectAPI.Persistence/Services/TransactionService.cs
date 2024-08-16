@@ -1,5 +1,7 @@
 ﻿using FinTechProjectAPI.Application.Abstractions.Services.Transactions;
 using FinTechProjectAPI.Application.DTOs.Transaction;
+using FinTechProjectAPI.Application.Repositories.Categories;
+using FinTechProjectAPI.Application.Repositories.DefaultCategories;
 using FinTechProjectAPI.Application.Repositories.ExpenseTransactions;
 using FinTechProjectAPI.Application.Repositories.IncomeTransactions;
 using FinTechProjectAPI.Application.Repositories.Transactions;
@@ -25,6 +27,8 @@ namespace FinTechProjectAPI.Persistence.Services
         private readonly IExpenseTransactionWriteRepository _expenseTransactionWriteRepository;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IDefaultCategoryReadRepository _defaultCategoryReadRepository;
+        private readonly ICategoryReadRepository _categoryReadRepository;
 
         public TransactionService(
             ITransactionWriteRepository transactionWriteRepository,
@@ -34,7 +38,9 @@ namespace FinTechProjectAPI.Persistence.Services
             IExpenseTransactionReadRepository expenseTransactionReadRepository,
             IExpenseTransactionWriteRepository expenseTransactionWriteRepository,
             IHttpContextAccessor contextAccessor,
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager,
+            IDefaultCategoryReadRepository defaultCategoryReadRepository,
+            ICategoryReadRepository categoryReadRepository)
         {
             _transactionWriteRepository = transactionWriteRepository;
             _transactionReadRepository = transactionReadRepository;
@@ -44,11 +50,13 @@ namespace FinTechProjectAPI.Persistence.Services
             _expenseTransactionWriteRepository = expenseTransactionWriteRepository;
             _contextAccessor = contextAccessor;
             _userManager = userManager;
+            _defaultCategoryReadRepository = defaultCategoryReadRepository;
+            _categoryReadRepository = categoryReadRepository;
         }
 
         public async Task<bool> CreateExpenseTransaction(string categoryId, string description, float amount, DateTime transactionDate)
         {
-            var transaction = await CreateBaseTransaction(amount, description, categoryId, transactionDate);
+            var transaction = await CreateBaseTransaction(amount, description, categoryId, transactionDate );
             await _expenseTransactionWriteRepository.AddAsync(new ExpenseTransaction
             {
 
@@ -74,14 +82,15 @@ namespace FinTechProjectAPI.Persistence.Services
         public async Task<List<GetListTransactionDto>> GetAllTransactions()
         {
             AppUser user = await ContextUser();
-            var Transactions = await _transactionReadRepository.Table.Include(t => t.AppUser).Where(t => t.AppUserId == user.Id)
+            var Transactions = await _transactionReadRepository.Table.Include(t => t.AppUser).Include(t=>t.DefaultCategory).Where(t => t.AppUserId == user.Id)
                    .Select(t => new GetListTransactionDto
                    {
                        Amount = t.Amount,
                        Description = t.Description,
-                       Category = t.Category.Name,
+                       Category = t.Category.Name ==null ? t.DefaultCategory.Name : t.Category.Name,
                        TransactionType = t.Category.Type == 0 ? "Expense" : "Income",
                        TransactionDate = t.TransactionDate,
+                       TransactionId = t.Id.ToString(),
                    }).ToListAsync();
             return Transactions;
         }
@@ -118,35 +127,56 @@ namespace FinTechProjectAPI.Persistence.Services
         {
             AppUser user = await ContextUser();
 
-            float totalIncome = await _transactionReadRepository.Table
+            Double totalIncome = await _transactionReadRepository.Table
                 .Where(t => t.AppUserId == user.Id && t.IncomeTransaction != null)
                 .SumAsync(t => t.Amount);
 
-            float totalExpense = await _transactionReadRepository.Table
+            Double totalExpense = await _transactionReadRepository.Table
                 .Where(t => t.AppUserId == user.Id && t.ExpenseTransaction != null)
                 .SumAsync(t => t.Amount);
 
-            float currentBalance = totalIncome - totalExpense;
-          return  new GetCurrentBalanceDto
+            Double currentBalance = totalIncome - totalExpense;
+            return new GetCurrentBalanceDto
             {
                 CurrentBalance = currentBalance,
                 Expense = totalExpense,
                 Income = totalIncome,
                 UserName = user.UserName
             };
-           
+
         }
+
+        public async Task<bool> DeleteTransaction(string transactionId)
+        {
+            AppUser user = await ContextUser();
+            Transaction? transaction = await _transactionReadRepository.Table
+               .Include(t => t.AppUser)
+               .Where(t => t.AppUserId == user.Id && t.Id == Guid.Parse(transactionId))
+               .FirstOrDefaultAsync();
+
+            if(transaction != null)
+            {
+                _transactionWriteRepository.Remove(transaction);
+                await _transactionWriteRepository.SaveAsync();
+                return true;
+            }
+
+            return false;
+        }
+
+
 
 
         private async Task<Transaction> CreateBaseTransaction(float amount, string description, string categoryId, DateTime transactionDate)
         {
             AppUser user = await ContextUser();
-
+            bool ısdefault = await Isdefault(categoryId);
             Transaction transaction = new()
             {
                 Id = Guid.NewGuid(),
                 Amount = amount,
-                CategoryId = Guid.Parse(categoryId),
+                CategoryId = ısdefault != true ? Guid.Parse(categoryId) :null,
+                DefaultCategoryId= ısdefault == true ? Guid.Parse(categoryId) : null,
                 AppUserId = user.Id,
                 Description = description,
                 TransactionDate = transactionDate
@@ -167,6 +197,16 @@ namespace FinTechProjectAPI.Persistence.Services
             throw new Exception("User Not Found");
         }
 
-       
+
+        private async Task<bool> Isdefault(string categoryId)
+        {
+          DefaultCategory defaultCategory = await  _defaultCategoryReadRepository.GetByIdAsync(categoryId);
+            if(defaultCategory == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
     }
 }

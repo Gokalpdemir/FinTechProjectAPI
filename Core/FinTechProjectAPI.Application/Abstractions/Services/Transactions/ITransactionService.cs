@@ -16,8 +16,10 @@ public interface ITransactionService
 
     public Task<List<GetListTransactionDto>> GetListExpenseTransaction();
 
-    public Task<GetCurrentBalanceDto> GetCurrentBalance(); 
+    public Task<GetCurrentBalanceDto> GetCurrentBalance();
 
+    public Task<bool> DeleteTransaction(string transactionId);
+    
 
 
 }
